@@ -15,8 +15,6 @@ app.use(cors({PORT, CORS_ORIGIN}))
 // console.log(videoData.videoDetails[0].comments)
 // console.log(PORT)
 
-const { videos, videoDetails } = videoData
-
 
 let students = [
   {
@@ -69,32 +67,48 @@ let students = [
   },
 ];
 
-
+// GET is working!
 app.get('/videos', (req, res) => {
-  res.json(videos);
+  res.json(videoData.videos);
 })
 
 
-
-app.post('/videos/:id', (req, res) => {
-  const comment = req.body;
-
+// Working on POST
+app.post('/videos/:id/comments', (req, res) => {
+  const comment = req.body.comment;
+  const videoId = req.params.id;
  // videoData.videoDetails[0].comments
+ // This part SHOULD work, but haven't tested it yet
   const newComment = {
     id: uuidv4(),
     name: "Bryce Borer",
-    comment,
+    comment: comment,
     likes: 0,
     timestamp: Date.now()
   };
+  // console.log("req: ", req)
+  console.log("comment: ", comment)
+  // console.log("videoId: ", videoId)
 
-  students.push(newComment);
-  res.json(newComment);
 
-  fs.writeFile("./data/videos.json",
-        JSON.stringify(response.data.results), () => {
-            console.log("listOfPokemon.json has been created!")
+  // videoData.videoDetails.comments.push(newComment)
+  // students.push(newComment);
+  
+  fs.readFile("./data/videos2.json", (err, data) =>{
+    // console.log(data)
+    const newThing = data.videoDetails.find((e) => {e.id = videoId})
+    // videoData.videoDetails.comments.push(newThing)
+    console.log("newThing: ", newThing)
+  })
+
+  fs.writeFile("./data/videos2.json",
+        JSON.stringify(videoData), () => {
+            console.log("videos2.json has been created!")
+            res.json(newComment);
         });
+        
+// read file and latest entry
+
 });
 
 app.delete('/api/v1/students/:id', (req, res) => {
