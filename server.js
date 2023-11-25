@@ -38,7 +38,6 @@ app.post('/videos/:videoId/comments', (req, res) => {
 
   fs.writeFile("./data/videos2.json",
     JSON.stringify(readVideos), () => {
-      console.log("videos2.json has been created!")
       res.json(newComment);
     });
 
@@ -53,19 +52,16 @@ app.delete('/videos/:videoId/comments/:commentId', (req, res) => {
   const videoIndex = readVideos.videoDetails.findIndex((e) => e.id == videoId)
 
   const filteredVideoComments = readVideos.videoDetails[videoIndex].comments.filter((comment) => {
-    console.log("comment.id: ", comment.id)
     return comment.id !== commentId;
   });
 
- //Updates comments with deleted comment removed
- readVideos.videoDetails[videoIndex].comments = filteredVideoComments
- 
+  //Updates comments with deleted comment removed
+  readVideos.videoDetails[videoIndex].comments = filteredVideoComments
 
- fs.writeFile("./data/videos2.json",
-   JSON.stringify(readVideos), () => {
-     console.log("videos2.json has been created!")
-     res.json(filteredVideoComments);
-   });
+  fs.writeFile("./data/videos2.json",
+    JSON.stringify(readVideos), () => {
+      res.json(filteredVideoComments);
+    });
 
 });
 
