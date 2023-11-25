@@ -10,8 +10,19 @@ app.use(express.json());
 const { PORT, CORS_ORIGIN } = process.env
 app.use(cors({ PORT, CORS_ORIGIN }))
 
+// get all videos
 app.get('/videos', (req, res) => {
   res.json(videoData.videos);
+})
+
+// get video ID
+app.get('/videos/:id', (req, res) => {
+  const videoId = req.params.id
+  const getVideos = () => fs.readFileSync("./data/videos2.json", { endoding: 'utf8' })
+  const readVideos = JSON.parse(getVideos())
+  const videoIndex = readVideos.videoDetails.findIndex((e) => e.id == videoId)
+  console.log(readVideos.videoDetails[videoIndex])
+  res.json(readVideos.videoDetails[videoIndex]);
 })
 
 app.post('/videos/:videoId/comments', (req, res) => {
