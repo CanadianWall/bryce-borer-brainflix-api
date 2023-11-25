@@ -10,13 +10,10 @@ app.use(express.json());
 const { PORT, CORS_ORIGIN } = process.env
 app.use(cors({ PORT, CORS_ORIGIN }))
 
-
-// GET is working!
 app.get('/videos', (req, res) => {
   res.json(videoData.videos);
 })
 
-// Working on POST
 app.post('/videos/:videoId/comments', (req, res) => {
   const comment = req.body.comment;
   const videoId = req.params.videoId;
