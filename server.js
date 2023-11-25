@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 const cors = require('cors');
 app.use(express.json());
 const { PORT, CORS_ORIGIN } = process.env
-app.use(cors({PORT, CORS_ORIGIN}))
+app.use(cors({ PORT, CORS_ORIGIN }))
 
 
 // console.log(videoData.videos)
@@ -77,8 +77,7 @@ app.get('/videos', (req, res) => {
 app.post('/videos/:id/comments', (req, res) => {
   const comment = req.body.comment;
   const videoId = req.params.id;
- // videoData.videoDetails[0].comments
- // This part SHOULD work, but haven't tested it yet
+
   const newComment = {
     id: uuidv4(),
     name: "Bryce Borer",
@@ -86,35 +85,30 @@ app.post('/videos/:id/comments', (req, res) => {
     likes: 0,
     timestamp: Date.now()
   };
-  // console.log("req: ", req)
-  console.log("comment: ", comment)
-  // console.log("videoId: ", videoId)
 
+  const getVideos = () => fs.readFileSync("./data/videos2.json", { endoding: 'utf8' })
+  let readVideos = JSON.parse(getVideos())
+  const newCommentVideoIndex = readVideos.videoDetails.findIndex((e) => e.id == videoId)
 
-  // videoData.videoDetails.comments.push(newComment)
-  // students.push(newComment);
-  
-  fs.readFile("./data/videos2.json", (err, data) =>{
-    // console.log(data)
-    const newThing = data.videoDetails.find((e) => {e.id = videoId})
-    // videoData.videoDetails.comments.push(newThing)
-    console.log("newThing: ", newThing)
-  })
+  //Adds new comment to the proper video
+  readVideos.videoDetails[newCommentVideoIndex].comments = [...readVideos.videoDetails[newCommentVideoIndex].comments, newComment]
+
+  console.log("newThingId: ", readVideos.videoDetails[newCommentVideoIndex].comments)
 
   fs.writeFile("./data/videos2.json",
-        JSON.stringify(videoData), () => {
-            console.log("videos2.json has been created!")
-            res.json(newComment);
-        });
-        
-// read file and latest entry
+    JSON.stringify(readVideos), () => {
+      console.log("videos2.json has been created!")
+      res.json(newComment);
+    });
+
+  // read file and latest entry
 
 });
 
 app.delete('/api/v1/students/:id', (req, res) => {
   const studentIdParam = req.params.id
-  const filteredStudents = students.filter((student)=> {
-    return student.id !==studentIdParam
+  const filteredStudents = students.filter((student) => {
+    return student.id !== studentIdParam
   });
   students = filteredStudents
   res.send(filteredStudents)
