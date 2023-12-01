@@ -7,6 +7,8 @@ const app = express();
 const { v4: uuidv4 } = require('uuid');
 const cors = require('cors');
 app.use(express.json());
+app.use(express.static('public'))
+app.use('/images', express.static('images'))
 const { PORT, CORS_ORIGIN } = process.env
 app.use(cors({ PORT, CORS_ORIGIN }))
 
@@ -21,7 +23,6 @@ app.get('/videos/:id', (req, res) => {
   const getVideos = () => fs.readFileSync("./data/videos2.json", { endoding: 'utf8' })
   const readVideos = JSON.parse(getVideos())
   const videoIndex = readVideos.videoDetails.findIndex((e) => e.id == videoId)
-  console.log(readVideos.videoDetails[videoIndex])
   res.json(readVideos.videoDetails[videoIndex]);
 })
 
@@ -30,6 +31,30 @@ app.post('/videos/:videoId/comments', (req, res) => {
   const videoId = req.params.videoId;
 
   const newComment = {
+    id: uuidv4(),
+    name: "Bryce Borer",
+    comment: comment,
+    likes: 0,
+    timestamp: Date.now()
+  };
+
+  const getVideos = () => fs.readFileSync("./data/videos2.json", { endoding: 'utf8' })
+  let readVideos = JSON.parse(getVideos())
+  const newCommentVideoIndex = readVideos.videoDetails.findIndex((e) => e.id == videoId)
+
+  //Adds new comment to the proper video
+  readVideos.videoDetails[newCommentVideoIndex].comments = [...readVideos.videoDetails[newCommentVideoIndex].comments, newComment]
+
+  fs.writeFile("./data/videos2.json",
+    JSON.stringify(readVideos), () => {
+      res.json(newComment);
+    });
+
+});
+
+
+app.post('/upload', (req, res) => {
+  const newVideo = {
     id: uuidv4(),
     name: "Bryce Borer",
     comment: comment,
