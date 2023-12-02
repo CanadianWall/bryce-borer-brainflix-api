@@ -1,5 +1,5 @@
 
-const videoData = require('./data/videos.json');
+const videoData = require('./data/videos2.json');
 const fs = require('fs');
 require('dotenv').config();
 const express = require('express');
@@ -54,24 +54,46 @@ app.post('/videos/:videoId/comments', (req, res) => {
 
 
 app.post('/upload', (req, res) => {
+  const newVideoId = uuidv4()
+  const title = req.body.title;
+  const channel = req.body.channel;
+  const image = req.body.image;
+  const description = req.body.description;
+  
   const newVideo = {
-    id: uuidv4(),
-    name: "Bryce Borer",
-    comment: comment,
+    id: newVideoId,
+    title: title,
+    channel: channel,
+    image: image
+  }
+
+  const newVideoDetails = {
+    id: newVideoId,
+    title: title,
+    channel: channel,
+    image: image,
+    description: description,
+    views: 0,
     likes: 0,
-    timestamp: Date.now()
+    duration: "0:20",
+    video: "https://project-2-api.herokuapp.com/stream",
+    timestamp: Date.now(),
+    comments: []
   };
 
   const getVideos = () => fs.readFileSync("./data/videos2.json", { endoding: 'utf8' })
   let readVideos = JSON.parse(getVideos())
-  const newCommentVideoIndex = readVideos.videoDetails.findIndex((e) => e.id == videoId)
+  
+  //Adds new video
+  readVideos.videos = [...readVideos.videos, newVideo]
 
-  //Adds new comment to the proper video
-  readVideos.videoDetails[newCommentVideoIndex].comments = [...readVideos.videoDetails[newCommentVideoIndex].comments, newComment]
+  //Adds new video with details
+  readVideos.videoDetails = [...readVideos.videoDetails, newVideoDetails]
 
   fs.writeFile("./data/videos2.json",
     JSON.stringify(readVideos), () => {
-      res.json(newComment);
+      console.log(title)
+      res.json(`${title} has been uploaded!`);
     });
 
 });
