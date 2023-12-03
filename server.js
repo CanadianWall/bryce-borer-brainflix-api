@@ -59,7 +59,7 @@ app.post('/upload', (req, res) => {
   const channel = req.body.channel;
   const image = req.body.image;
   const description = req.body.description;
-  
+
   const newVideo = {
     id: newVideoId,
     title: title,
@@ -83,7 +83,7 @@ app.post('/upload', (req, res) => {
 
   const getVideos = () => fs.readFileSync("./data/videos2.json", { endoding: 'utf8' })
   let readVideos = JSON.parse(getVideos())
-  
+
   //Adds new video
   readVideos.videos = [...readVideos.videos, newVideo]
 
@@ -115,9 +115,14 @@ app.delete('/videos/:videoId/comments/:commentId', (req, res) => {
 
   fs.writeFile("./data/videos2.json",
     JSON.stringify(readVideos), () => {
+
       res.json(filteredVideoComments);
+
     });
+
+
 
 });
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+
