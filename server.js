@@ -1,4 +1,3 @@
-
 const videoData = require('./data/videos2.json');
 const fs = require('fs');
 require('dotenv').config();
@@ -52,7 +51,6 @@ app.post('/videos/:videoId/comments', (req, res) => {
 
 });
 
-
 app.post('/upload', (req, res) => {
   const newVideoId = uuidv4()
   const title = req.body.title;
@@ -73,8 +71,8 @@ app.post('/upload', (req, res) => {
     channel: channel,
     image: image,
     description: description,
-    views: 0,
-    likes: 0,
+    views: "0",
+    likes: "0",
     duration: "0:20",
     video: "https://project-2-api.herokuapp.com/stream",
     timestamp: Date.now(),
@@ -119,10 +117,35 @@ app.delete('/videos/:videoId/comments/:commentId', (req, res) => {
       res.json(filteredVideoComments);
 
     });
-
-
-
 });
+
+app.put('/videos/:videoId/likes', (req, res) => {
+  const videoId = req.params.videoId
+
+  const getVideos = () => fs.readFileSync("./data/videos2.json", { endoding: 'utf8' })
+  let readVideos = JSON.parse(getVideos())
+  const videoIndex = readVideos.videoDetails.findIndex((e) => e.id == videoId)
+
+  let likesString = readVideos.videoDetails[videoIndex].likes
+  let likesInt
+
+  // Handles commas in the likes number
+  if (likesString.length > 3) {
+    likesString = readVideos.videoDetails[videoIndex].likes.replace(/,/g, "");
+    likesInt = parseInt(likesString) + 1
+    likesString = likesInt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  } else {
+    likesInt = parseInt(likesString) + 1
+    likesString = likesInt.toString()
+  }
+
+  readVideos.videoDetails[videoIndex].likes = likesString
+
+  fs.writeFile("./data/videos2.json",
+    JSON.stringify(readVideos), () => {
+      res.json(readVideos.videoDetails[videoIndex].likes);
+    });
+})
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
